@@ -5,11 +5,11 @@ import { Link, History } from 'react-router'
 import reactMixin from 'react-mixin'
 
 import { SearchActions } from '../store/search'
+import { NavigationActions } from '../store/navigation'
 
 function mapStateToProps(state) {
   return {
-    query: state.search.query,
-    currentId: state.identities.current.id
+    location: state.navigation.location
   }
 }
 
@@ -23,7 +23,7 @@ class SearchBar extends Component {
     placeholder: PropTypes.string.isRequired,
     timeout: PropTypes.number.isRequired,
     searchIdentities: PropTypes.func.isRequired,
-    query: PropTypes.string.isRequired
+    location: PropTypes.string.isRequired
   }
 
   constructor(props) {
@@ -43,9 +43,9 @@ class SearchBar extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.currentId !== null && nextProps.currentId !== this.props.currentId) {
+    if (nextProps.location !== this.props.location) {
       this.setState({
-        query: nextProps.currentId
+        query: nextProps.location
       })
     }
   }

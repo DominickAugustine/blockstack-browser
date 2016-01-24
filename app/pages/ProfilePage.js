@@ -6,7 +6,7 @@ import { Link } from 'react-router'
 import AccountListItem from '../components/AccountListItem'
 import { getName, getVerifiedAccounts, getAvatarUrl } from '../utils/profile-utils.js'
 import { IdentityActions } from '../store/identities'
-import { SearchActions } from '../store/search'
+import { NavigationActions } from '../store/navigation'
 
 function mapStateToProps(state) {
   return {
@@ -17,7 +17,7 @@ function mapStateToProps(state) {
 }
 
 function mapDispatchToProps(dispatch) {
-  let actions = Object.assign(IdentityActions, SearchActions)
+  const actions = Object.assign(IdentityActions, NavigationActions)
   return bindActionCreators(actions, dispatch)
 }
 
@@ -25,10 +25,10 @@ class ProfilePage extends Component {
   static propTypes = {
     fetchCurrentIdentity: PropTypes.func.isRequired,
     updateCurrentIdentity: PropTypes.func.isRequired,
-    updateQuery: PropTypes.func.isRequired,
     currentIdentity: PropTypes.object.isRequired,
     localIdentities: PropTypes.array.isRequired,
-    nameLookupUrl: PropTypes.string.isRequired
+    nameLookupUrl: PropTypes.string.isRequired,
+    updateLocation: PropTypes.func.isRequired
   }
 
   constructor(props) {
@@ -49,7 +49,9 @@ class ProfilePage extends Component {
             name = this.props.localIdentities[routeParams.index].id,
             verifications = []
       this.props.updateCurrentIdentity(name, profile, verifications)
+      this.props.updateLocation('bctp://' + routeParams.index)
     } else if (routeParams.name) {
+      this.props.updateLocation('bctp://' + routeParams.name)
       this.props.fetchCurrentIdentity(routeParams.name, this.props.nameLookupUrl)
     }
   }
@@ -59,7 +61,7 @@ class ProfilePage extends Component {
   }
 
   componentWillUnmount() {
-    this.props.updateCurrentIdentity('', {}, [])
+    this.props.updateCurrentIdentity(null, {}, [])
   }
 
   componentWillReceiveProps(nextProps) {

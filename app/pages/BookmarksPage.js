@@ -4,6 +4,7 @@ import { connect } from 'react-redux'
 import { Link } from 'react-router'
 
 import ListItem from '../components/ListItem'
+import { NavigationActions } from '../store/navigation'
 
 function mapStateToProps(state) {
   return {
@@ -11,7 +12,23 @@ function mapStateToProps(state) {
   }
 }
 
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators(NavigationActions, dispatch)
+}
+
 class BookmarksPage extends Component {
+  static propTypes = {
+    updateLocation: PropTypes.func.isRequired
+  }
+
+  constructor(props) {
+    super(props)
+  }
+
+  componentWillMount() {
+    this.props.updateLocation('local://bookmarks')
+  }
+
   render() {
     return (
       <div>
@@ -34,4 +51,4 @@ class BookmarksPage extends Component {
   }
 }
 
-export default connect(mapStateToProps)(BookmarksPage)
+export default connect(mapStateToProps, mapDispatchToProps)(BookmarksPage)

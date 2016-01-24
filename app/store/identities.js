@@ -4,20 +4,19 @@ const UPDATE_CURRENT = 'UPDATE_CURRENT',
       CREATE_NEW = 'CREATE_NEW',
       UPDATE_PROFILE = 'UPDATE_PROFILE'
 
-function updateCurrentIdentity(id, profile, verifications) {
-  console.log('updating identity')
+function updateCurrentIdentity(domain, profile, verifications) {
   return {
     type: UPDATE_CURRENT,
-    id: id,
+    domain: domain,
     profile: profile,
     verifications: verifications
   }
 }
 
-function createNewIdentity(id) {
+function createNewIdentity(domain) {
   return {
     type: CREATE_NEW,
-    id: id
+    domain: domain
   }
 }
 
@@ -78,7 +77,7 @@ export function IdentityReducer(state = initialState, action) {
     case UPDATE_CURRENT:
       return Object.assign({}, state, {
         current: {
-          id: action.id,
+          id: action.domain,
           profile: action.profile,
           verifications: action.verifications
         }
@@ -89,7 +88,7 @@ export function IdentityReducer(state = initialState, action) {
           ...state.local,
           {
             index: state.local.length,
-            id: action.id,
+            id: action.domain,
             profile: {},
             verifications: [],
             registered: false
