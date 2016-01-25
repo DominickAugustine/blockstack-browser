@@ -1,29 +1,34 @@
 import React, { Component, PropTypes } from 'react'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
-import { Link, History } from 'react-router'
-import reactMixin from 'react-mixin'
+import { Link } from 'react-router'
+import { routeActions } from 'react-router-redux'
 
 import { SearchActions } from '../store/search'
-import { NavigationActions } from '../store/navigation'
 
 function mapStateToProps(state) {
   return {
-    location: state.navigation.location
+    location: state.routing.location,
+    pathname: state.routing.location.hash
   }
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators(SearchActions, dispatch)
+  const actions = Object.assign(SearchActions, routeActions)
+  return bindActionCreators(actions, dispatch)
 }
 
-@reactMixin.decorate(History)
 class SearchBar extends Component {
   static propTypes = {
     placeholder: PropTypes.string.isRequired,
     timeout: PropTypes.number.isRequired,
     searchIdentities: PropTypes.func.isRequired,
-    location: PropTypes.string.isRequired
+    pathname: PropTypes.string.isRequired,
+    location: PropTypes.object.isRequired
+  }
+
+  static contextTypes = {
+    router: React.PropTypes.object.isRequired
   }
 
   constructor(props) {
@@ -42,17 +47,34 @@ class SearchBar extends Component {
     this.onBlur = this.onBlur.bind(this)
   }
 
+  componentHasNewPathname(newPathname) {
+    let pathname = newPathname.split('?')[0].replace('#/', '')
+    //console.log(pathname)
+    let location = 'local://' + pathname
+    if (pathname.includes('profile/')) {
+      location = pathname.replace('profile/', '')
+    } else if (pathname.includes('search/')) {
+      location = pathname.replace('search/', '')
+    }
+    this.setState({
+      query: location
+    })
+  }
+
+  componentWillMount() {
+    this.componentHasNewPathname(this.props.pathname)
+  }
+
   componentWillReceiveProps(nextProps) {
-    if (nextProps.location !== this.props.location) {
-      this.setState({
-        query: nextProps.location
-      })
+    console.log(nextProps.location)
+    if (nextProps.pathname !== this.props.pathname) {
+      this.componentHasNewPathname(nextProps.pathname)
     }
   }
 
   submitQuery(query) {
     const newPath = `search/${query.replace(' ', '%20')}`
-    this.history.pushState(null, newPath)
+    this.context.router.push(newPath)
   }
 
   onFocus(event) {

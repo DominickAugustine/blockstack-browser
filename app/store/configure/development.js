@@ -1,25 +1,17 @@
 import { createStore, applyMiddleware, compose } from 'redux'
 import persistState from 'redux-localstorage'
 import thunk from 'redux-thunk'
+import { syncHistory } from 'react-router-redux'
+import { browserHistory } from 'react-router'
+
 import RootReducer from '../reducers/index'
 import DevTools from '../../components/DevTools'
 
-const config = {
-  key: 'redux',
-  slicer: (paths) => {
-    return (state) => {
-      return state
-    }
-  }
-}
-
-const paths = [
-  'actionsById', 'committedState', 'computedStates', 'currentStateIndex',
-  'monitorState', 'nextActionId', 'skippedActionIds', 'stagedActionIds'
-]
+const reduxRouterMiddleware = syncHistory(browserHistory)
 
 const finalCreateStore = compose(
   applyMiddleware(thunk),
+  applyMiddleware(reduxRouterMiddleware),
   DevTools.instrument()
 )(createStore)
 

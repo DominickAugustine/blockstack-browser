@@ -1,7 +1,10 @@
 import React, { Component, PropTypes } from 'react'
-import { Link, History } from 'react-router'
+import { bindActionCreators } from 'redux'
+import { connect } from 'react-redux'
+import { Link } from 'react-router'
+import { routeActions } from 'react-router-redux'
 
-export class SaveButton extends Component {
+class SaveButton extends Component {
   static propTypes = {
     onSave: PropTypes.func
   }
@@ -41,24 +44,4 @@ export class SaveButton extends Component {
   }
 }
 
-export const BackButton = React.createClass({
-  mixins: [ History ],
-  render() {
-    return (
-      <button className="btn btn-sm nav-page" onClick={() => this.history.goBack()}>
-        {this.props.children}
-      </button>
-   )
- }
-})
-
-export const ForwardButton = React.createClass({
-  mixins: [ History ],
-  render() {
-    return (
-      <button className="btn btn-sm nav-page" onClick={() => this.history.goForward()}>
-        {this.props.children}
-      </button>
-   )
- }
-})
+export default SaveButton

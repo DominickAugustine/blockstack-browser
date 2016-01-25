@@ -4,7 +4,6 @@ import { connect } from 'react-redux'
 import { Link } from 'react-router'
 
 import { SearchActions } from '../store/search'
-import { NavigationActions } from '../store/navigation'
 import SearchItem from '../components/SearchItem'
 
 function mapStateToProps(state) {
@@ -15,8 +14,7 @@ function mapStateToProps(state) {
 }
 
 function mapDispatchToProps(dispatch) {
-  const actions = Object.assign(SearchActions, NavigationActions)
-  return bindActionCreators(actions, dispatch)
+  return bindActionCreators(SearchActions, dispatch)
 }
 
 class SearchPage extends Component {
@@ -33,7 +31,6 @@ class SearchPage extends Component {
   }
 
   componentHasNewRouteParams(routeParams) {
-    this.props.updateLocation(routeParams.query)
     this.props.searchIdentities(routeParams.query,
       this.props.api.searchUrl, this.props.api.nameLookupUrl)
   }
