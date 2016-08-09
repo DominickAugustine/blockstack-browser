@@ -7,6 +7,7 @@ import { Person } from 'blockstack-profiles'
 import { SocialAccountItem, Image } from '../../components/index'
 import { IdentityActions } from '../../store/identities'
 import { SearchActions } from '../../store/search'
+import { getVerifications } from '../../utils'
 
 const placeholderImage = "https://s3.amazonaws.com/65m/avatar-placeholder.png"
 
@@ -38,21 +39,25 @@ class ViewProfilePage extends Component {
 
     this.state = {
       currentIdentity: {
-        id: null,
+        domainName: null,
         profile: null,
         verifications: [],
         blockNumber: null,
         transactionNumber: null
       },
-      isLoading: true
+      isLoading: true,
+      isLocal: false
     }
+
+    this.setCurrentIdentity = this.setCurrentIdentity.bind(this)
+    this.getAccountsAndConnections = this.getAccountsAndConnections.bind(this)
   }
 
   componentHasNewRouteParams(props) {
     if (props.routeParams.index) {
       const newDomainIndex = props.routeParams.index,
             profile = props.localIdentities[newDomainIndex].profile,
-            name = props.localIdentities[newDomainIndex].id,
+            name = props.localIdentities[newDomainIndex].domainName,
             verifications = []
       this.props.updateCurrentIdentity(name, profile, verifications)
     } else if (props.routeParams.name) {
@@ -64,30 +69,30 @@ class ViewProfilePage extends Component {
     this.componentHasNewRouteParams(this.props)
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.routeParams !== this.props.routeParams) {
-      this.componentHasNewRouteParams(nextProps)
-    }
-    this.setState({
-      currentIdentity: nextProps.currentIdentity,
-      isLoading: false
-    })
-  }
-
-  render() {
-    let identity = this.state.currentIdentity,
-        blockchainId = identity.id
-
-    let profile = identity.profile || null,
-        verifications = identity.verifications,
-        blockNumber = identity.blockNumber,
-        transactionIndex = identity.transactionIndex
-
+  setCurrentIdentity(currentIdentity) {
     let isLocal = false
     if (this.props.routeParams.hasOwnProperty('index')) {
       isLocal = true
     }
 
+    getVerifications(currentIdentity.domainName, currentIdentity.profile, (verifications) => {
+      currentIdentity.verifications = verifications
+      this.setState({
+        currentIdentity: currentIdentity,
+        isLoading: false,
+        isLocal: isLocal
+      })
+    })
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.routeParams !== this.props.routeParams) {
+      this.componentHasNewRouteParams(nextProps)
+    }
+    this.setCurrentIdentity(nextProps.currentIdentity)
+  }
+
+  getAccountsAndConnections(profile) {
     let person = null,
         accounts = [],
         connections = []
@@ -101,6 +106,19 @@ class ViewProfilePage extends Component {
       accounts = person.profile().account || []
       connections = person.connections() || []
     }
+
+    return { person, accounts, connections }
+  }
+
+  render() {
+    let identity = this.state.currentIdentity,
+        blockchainId = identity.domainName,
+        profile = identity.profile || null,
+        verifications = identity.verifications,
+        blockNumber = identity.blockNumber,
+        transactionIndex = identity.transactionIndex
+
+    let { person, accounts, connections } = this.getAccountsAndConnections(profile)
 
     return (
       <div className="container-fluid proid-wrap p-t-4">
@@ -118,7 +136,7 @@ class ViewProfilePage extends Component {
                       </div>
                     </div>
                   </div>
-                { isLocal ?
+                { this.state.isLocal ?
                 <div>
                   <Link to={this.props.location.pathname + "/edit"}
                     className="btn btn-block btn-primary m-t-1">
@@ -179,12 +197,7 @@ class ViewProfilePage extends Component {
           <div className="col-sm-3 pull-right profile-right-col-fill">
             <div className="profile-right-col inverse">
               <ul>
-                {accounts.map(function(account) {
-                  let verified = false
-                  if (account.proofUrl && account.proofUrl !== ""
-                      && account.proofUrl.indexOf(account.identifier) > 0) {
-                    verified = true
-                  }
+                {verifications.map((account) => {
                   return (
                     <SocialAccountItem
                       key={account.service + '-' + account.identifier}
@@ -192,7 +205,7 @@ class ViewProfilePage extends Component {
                       identifier={account.identifier}
                       proofUrl={account.proofUrl}
                       listItem={true}
-                      verified={verified} />
+                      verified={account.verified} />
                   )
                 })}
               </ul>

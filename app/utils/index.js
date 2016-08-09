@@ -1,5 +1,5 @@
 export {
-  isPasswordValid, isBackupPhraseValid, webAccountTypes
+  isPasswordValid, isBackupPhraseValid, webAccountTypes, getVerifications
 } from './account-utils'
 export { getNamesOwned, getIdentities } from './api-utils'
 export {

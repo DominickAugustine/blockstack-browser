@@ -157,9 +157,7 @@ function fetchCurrentIdentity(domainName, lookupUrl) {
               verifications = responseJson[username]['verifications']
         dispatch(updateCurrentIdentity(domainName, profile, verifications))
       })
-      .catch((error) => {
-        console.warn(error)
-      })
+
   }
 }
 
@@ -208,7 +206,6 @@ export function IdentityReducer(state = initialState, action) {
         })
       })
     case UPDATE_IDENTITIES:
-      console.log('UPDATE_IDENTITIES')
       return Object.assign({}, state, {
         localIdentities: action.localIdentities,
         lastNameLookup: action.namesOwned
