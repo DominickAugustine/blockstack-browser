@@ -19,8 +19,7 @@ npm install
 Run this two commands __simultaneously__ in different console tabs.
 
 ```bash
-npm run server
-npm run app
+npm run dev
 ```
 
 #### Toggling Chrome DevTools
