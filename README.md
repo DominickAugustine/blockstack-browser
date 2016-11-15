@@ -16,11 +16,15 @@ npm install
 
 ## Development
 
-Run this two commands __simultaneously__ in different console tabs.
+Run the following command:
 
 ```bash
 npm run dev
 ```
+
+It starts two processes, `npm run hot-server` and `npm run start-hot`, which start the server and client respectively.
+If the terminal displays `webpack: bundle is now VALID.` and the browser still doesn't display any content, you'll need to 
+instruct the browser to reload the content by selecting Reload from the View menu.
 
 #### Toggling Chrome DevTools
 
