@@ -140,7 +140,7 @@ function registerName(domainName, recipientAddress, tokenFileUrl, registerUrl,
       profile: zoneFile
     })
 
-    fetch(registerUrl, {
+    realFetch(registerUrl, {
       method: 'POST',
       headers: requestHeaders,
       mode: 'cors',

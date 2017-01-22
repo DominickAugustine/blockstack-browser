@@ -31,6 +31,7 @@ function createAccount(encryptedBackupPhrase, privateKeychain, email=null) {
   return {
     type: CREATE_ACCOUNT,
     encryptedBackupPhrase: encryptedBackupPhrase,
+    identityPrivateKeychain: identityPrivateKeychain.privateKey('hex'),
     identityPublicKeychain: identityPublicKeychain,
     bitcoinPublicKeychain: bitcoinPublicKeychain,
     firstIdentityAddress: firstIdentityAddress,
@@ -99,6 +100,7 @@ export const AccountActions = {
 const initialState = {
   accountCreated: false,
   encryptedBackupPhrase: null,
+  privateKeychain: null,
   identityAccount: {
     addresses: [],
     keypairs: []
@@ -116,6 +118,7 @@ export function AccountReducer(state=initialState, action) {
         accountCreated: true,
         encryptedBackupPhrase: action.encryptedBackupPhrase,
         identityAccount: {
+          privateKeychain: action.identityPrivateKeychain,
           publicKeychain: action.identityPublicKeychain,
           addresses: [
             ...state.identityAccount.addresses,
